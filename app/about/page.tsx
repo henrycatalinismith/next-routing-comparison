@@ -5,7 +5,7 @@ import { links } from "@/src/nav";
 import { content } from "@/src/main";
 import { useEffect, useState } from "react";
 
-export default function HomePage() {
+export default function AboutPage() {
   const [navLinks, setNavLinks] = useState<{ href: string; text: string }[]>(
     []
   );
@@ -13,7 +13,7 @@ export default function HomePage() {
 
   useEffect(() => {
     links().then((l) => setNavLinks(l));
-    content["/"]().then((c) => setHtml(c));
+    content["/about"]().then((c) => setHtml(c));
   }, []);
 
   return (
