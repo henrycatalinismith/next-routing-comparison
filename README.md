@@ -4,7 +4,7 @@ This repo compares four different approaches to setting up a simple website usin
 
 The website has a nav menu on the left and main content on the right. There are three pages: Home, About, and Contact. The nav menu content and the page content all take time to load, simulated using a `delay` function.
 
-## Approaches Evaluateed
+## Approaches Evaluated
 
 ## Approach 1: Client-side data fetching for both slots
 
