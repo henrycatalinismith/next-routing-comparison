@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Next.js Routing Comparison
 
-## Getting Started
+This repo compares four different approaches to setting up a simple website using the various routing and data fetching approaches available in Next.js.
 
-First, run the development server:
+The website has a nav menu on the left and main content on the right. There are three pages: Home, About, and Contact. The nav menu content and the page content all take time to load, simulated using a `delay` function.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Approaches Evaluateed
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Approach 1: Client-side data fetching for both slots
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This is the approach in the `main` branch. It puts `use client` at the top of every `page.tsx` file, and then loads all page content client-side on page load.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+This approach gives us parallelised loading, independent loading states for each slot, and no render blocking. on A notable downside is that the page navigation triggered by clicking one of the nav menu items causes the nav menu to reload and lose its UI state.
 
-## Learn More
+## Approach 2: Nav menu in layout.tsx, client-side fetching for main content
 
-To learn more about Next.js, take a look at the following resources:
+This builds on approach 1 by moving the nav menu into the layout. It's in the `layout-and-children-client-components` branch.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This fixes the issue of the UI state being lost on every navigation: the nav menu is now preserved intact across each page. But the layout is a server component, and uses async/await to fetch the nav menu data. As a result of this, rendering is blocked by that fetch. This sequentialises the data fetching, because the client-side fetch of the main content cannot begin until the page loads, which does not happen until the nav menu finishes rendering.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Approach 3: Nav menu in layout.tsx, server-side fetching for main content
 
-## Deploy on Vercel
+This builds on approach 2 by converting the main content to a server component. It's in the `layout-and-children-server-components` branch.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Thanks to `loading.tsx`, placeholder content can be displayed in the main slot while the main content is loading. However, no such loading state is possible for the nav menu when it's rendering server-side in `layout.tsx`. And the data fetching is still sequential.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Approach 4: Nav menu as parallel route
+
+Finally, the nav menu moves into `app/@nav` as a parallel route. This is in the `parallel-routes` branch.
+
+This approach parallelises the server-side data fetching, with no render blocking, with loading states possible for both slots, and with nav menu UI state preserved during navigation.
