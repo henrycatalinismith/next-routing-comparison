@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
-import { links } from "@/src/nav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,33 +14,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const navLinks = await links();
   return (
     <html lang="en">
-      <body className={`${inter.className} flex flex-row`}>
-        <nav className="flex flex-col w-[256px] border-r-2 border-black h-dvh p-2">
-          {navLinks.length === 0 ? (
-            <p>loading...</p>
-          ) : (
-            <>
-              <ul>
-                {navLinks.map(({ href, text }) => (
-                  <li key={href}>
-                    <Link className="underline text-blue-600" href={href}>
-                      {text}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              <details>
-                <summary>Details</summary>
-                <p>Details content</p>
-              </details>
-            </>
-          )}
-        </nav>
-        <main className="p-2">{children}</main>
-      </body>
+      <body className={`${inter.className} flex flex-row`}>{children}</body>
     </html>
   );
 }
